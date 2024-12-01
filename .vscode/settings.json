@@ -1,0 +1,27 @@
+{
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit",
+            "source.organizeImports": "explicit"
+        }
+    },
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.supportDocstringTemplate": false,
+    "python.analysis.typeCheckingMode": "standard",
+    "python.analysis.typeEvaluation.strictListInference": true,
+    "python.analysis.typeEvaluation.strictSetInference": true,
+    "python.analysis.inlayHints.pytestParameters": true,
+    "python.analysis.inlayHints.variableTypes": true,
+    "python.analysis.typeEvaluation.deprecateTypingAliases": true,
+    "python.analysis.typeEvaluation.disableBytesTypePromotions": true,
+    "python.analysis.typeEvaluation.enableReachabilityAnalysis": true,
+    "python.analysis.typeEvaluation.strictDictionaryInference": true,
+    "python.analysis.userFileIndexingLimit": -1,
+    "python.languageServer": "Pylance",
+    "cSpell.words": [],
+    "jupyter.debugJustMyCode": false,
+}
