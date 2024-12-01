@@ -12,5 +12,5 @@ def read_input() -> tuple[list, list]:
 
 if __name__ == "__main__":
     list1, list2 = read_input()
-    result = sum([abs(x - y) for x, y in zip(sorted(list1), sorted(list2))])
+    result = sum((abs(x - y) for x, y in zip(sorted(list1), sorted(list2))))
     print(result)
