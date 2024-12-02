@@ -9,7 +9,7 @@ def read_report() -> Generator[list[int], Any, None]:
 
 
 def check_safe(report: list[int]) -> bool:
-    if len(report) == 1:
+    if len(report) < 2:
         return True
     ascending = report[0] < report[1]
     for i in range(0, len(report) - 1):
@@ -17,10 +17,7 @@ def check_safe(report: list[int]) -> bool:
         if not (1 <= abs(diff) <= 3):
             return False
 
-        if ascending and diff > 0:
-            return False
-
-        if not ascending and diff < 0:
+        if (ascending and diff > 0) or (not ascending and diff < 0):
             return False
 
     return True
