@@ -16,6 +16,8 @@ def count_substring(s: str, patterns: set[str]) -> int:
 
 
 def count_patterns(to_check: list[str], patterns: set[str]) -> int:
+    if len(to_check) < len(next(iter(patterns))):
+        return 0
     to_check_joined = "".join(to_check)
     return count_substring(to_check_joined, patterns)
 
