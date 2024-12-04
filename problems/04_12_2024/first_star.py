@@ -1,4 +1,3 @@
-import re
 import sys
 
 
@@ -7,54 +6,63 @@ def read_input() -> list[list[str]]:
     return [list(line.strip()) for line in sys.stdin]
 
 
-def count_xmas(to_check: list[str], pattern: str) -> int:
-    to_check_joined = "".join(to_check)
-    return len(re.findall(pattern, to_check_joined))
-
-
-def result() -> int:
-    input = read_input()
+def count_substring(s: str, patterns: set[str]) -> int:
     count = 0
-
-    for vertical_line in input:
-        count += count_xmas(vertical_line, r"(XMAS)")
-        count += count_xmas(vertical_line, r"(SAMX)")
-
-    # Read input by columns
-    for i in range(len(input[0])):
-        count += count_xmas([input[j][i] for j in range(len(input))], r"(XMAS)")
-        count += count_xmas([input[j][i] for j in range(len(input))], r"(SAMX)")
-        print("_____")
-
-    diagonals = get_all_diagonals(input)
-    for diagonal in diagonals:
-        count += count_xmas(diagonal, r"(XMAS)")
-        count += count_xmas(diagonal, r"(SAMX)")
+    sub_len = len(next(iter(patterns)))
+    for i in range(len(s) - sub_len + 1):
+        if s[i : i + sub_len] in patterns:
+            count += 1
     return count
 
 
-def get_all_diagonals(matrix):
-    """Extract all diagonals (main and anti) from a matrix into a single list."""
+def count_patterns(to_check: list[str], patterns: set[str]) -> int:
+    to_check_joined = "".join(to_check)
+    return count_substring(to_check_joined, patterns)
+
+
+def result() -> int:
+    input_matrix = read_input()
+    count = 0
+    patterns = {"XMAS", "SAMX"}
+    n = len(input_matrix)
+    m = len(input_matrix[0])
+
+    # Rows
+    for row in input_matrix:
+        count += count_patterns(row, patterns)
+
+    # Columns
+    for i in range(m):
+        column = [input_matrix[j][i] for j in range(n)]
+        count += count_patterns(column, patterns)
+
+    # Diagonals
+    diagonals = get_all_diagonals(input_matrix)
+    for diagonal in diagonals:
+        count += count_patterns(diagonal, patterns)
+
+    return count
+
+
+def get_all_diagonals(matrix: list[list[str]]) -> list[list[str]]:
     n, m = len(matrix), len(matrix[0])
-    diagonals = {}
+    diagonals = []
 
-    # Collect main diagonals (row - col) and anti-diagonals (row + col)
-    for i in range(n):
-        for j in range(m):
-            # Main diagonal key (difference of indices)
-            d = f"main_{i - j}"
-            if d not in diagonals:
-                diagonals[d] = []
-            diagonals[d].append(matrix[i][j])
+    # Main diagonals
+    for p in range(-n + 1, m):
+        diagonals.append([matrix[i][i - p] for i in range(max(0, p), min(n, n + p))])
 
-            # Anti-diagonal key (sum of indices)
-            s = f"anti_{i + j}"
-            if s not in diagonals:
-                diagonals[s] = []
-            diagonals[s].append(matrix[i][j])
+    # Anti-diagonals
+    for p in range(n + m - 1):
+        diagonals.append(
+            [
+                matrix[i][p - i]
+                for i in range(max(0, p - m + 1), min(n, p + 1))
+                if 0 <= p - i < m
+            ]
+        )
 
-    # Return all diagonals as a single list
-    return list(diagonals.values())
+    return diagonals
 
 
 if __name__ == "__main__":
