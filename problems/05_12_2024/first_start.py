@@ -1,57 +1,55 @@
 import sys
 
 
-def read_rules() -> dict[int, list[int]]:
-    # Read line by line till we found a empty line
-    rules = dict()
-    for line in sys.stdin:
-        if line == "\n":
+def read_rules(lines: list[str]) -> dict[int, list[int]]:
+    # Parse the rules from the input lines
+    rules = {}
+    for line in lines:
+        if line == "":
             break
-        key, after = list(map(int, line.strip().split("|")))
-        if key not in rules:
-            rules[key] = [after]
-        else:
-            rules[key].append(after)
-
+        key, after = map(int, line.split("|"))
+        rules.setdefault(key, []).append(after)
     return rules
 
 
-def read_update() -> list[int]:
-    line = sys.stdin.readline().strip("")
-    if not line:
-        return []
-    return list(map(int, line.split(",")))
+def read_updates(lines: list[str]) -> list[list[int]]:
+    # Parse updates from the input lines
+    return [list(map(int, line.split(","))) for line in lines if line]
 
 
 def result() -> int:
-    rules = read_rules()
+    # Read all input at once
+    input_lines = sys.stdin.read().strip().splitlines()
+
+    # Separate rules and updates
+    empty_line_index = input_lines.index("")
+    rules_lines = input_lines[:empty_line_index]
+    updates_lines = input_lines[empty_line_index + 1 :]
+
+    # Parse rules and updates
+    rules = read_rules(rules_lines)
+    updates = read_updates(updates_lines)
 
     result = 0
-    while True:
-        update = read_update()
-        if len(update) == 0:
-            break
-
+    for update in updates:
+        update_set = set(update)  # Use a set for fast membership checking
         update_ok = True
+
         for index_page, page in enumerate(update):
             page_rules = rules.get(page, [])
-            if len(page_rules) == 0:
+            if not page_rules:
                 continue
 
-            all_ok = True
+            # Check if all "after" rules are satisfied
             for after in page_rules:
-                # all_ok if all after are after page in update
-                if after not in update:
-                    continue
-                if after in update[:index_page]:
-                    all_ok = False
+                if after in update_set and after in update[:index_page]:
+                    update_ok = False
                     break
-            if not all_ok:
-                update_ok = False
+            if not update_ok:
                 break
 
         if update_ok:
-            # add to result the mid number of the update
+            # Add the mid element of the update to the result
             result += update[len(update) // 2]
 
     return result
