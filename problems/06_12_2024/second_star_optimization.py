@@ -57,19 +57,18 @@ def jump(
     x: int,
     y: int,
     direction_index: int,
-    block_patch: tuple[int, int] | None,
+    block_patch: tuple[int, int],
 ) -> tuple[int, int, int] | None:
     dest = jump_map.get((x, y, direction_index))
     if dest is None:
         return None
 
-    if block_patch is not None:
-        fx, fy, fdirection_index = dest
-        bx, by = block_patch
-        if fx == bx and min(y, fy) <= by <= max(y, fy):
-            return jump_into_block(directions, direction_index, block_patch)
-        elif min(x, fx) <= bx <= max(x, fx) and fy == by:
-            return jump_into_block(directions, direction_index, block_patch)
+    fx, fy, _ = dest
+    bx, by = block_patch
+    if fx == bx and min(y, fy) <= by <= max(y, fy):
+        return jump_into_block(directions, direction_index, block_patch)
+    elif min(x, fx) <= bx <= max(x, fx) and fy == by:
+        return jump_into_block(directions, direction_index, block_patch)
     return dest
 
 
