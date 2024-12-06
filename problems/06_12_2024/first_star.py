@@ -30,7 +30,7 @@ def count_movements(
 
     n, m = len(matrix), len(matrix[0])
 
-    cange_direction = {
+    change_direction = {
         (-1, 0): (0, 1),  # Up to Right
         (0, 1): (1, 0),  # Right to Down
         (1, 0): (0, -1),  # Down to Left
@@ -48,7 +48,7 @@ def count_movements(
             and 0 <= next_col < m
             and matrix[next_row][next_col] == "#"
         ):
-            direction = cange_direction[direction]
+            direction = change_direction[direction]
             continue
 
         row, col = next_row, next_col
