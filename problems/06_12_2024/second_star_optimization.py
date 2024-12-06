@@ -90,7 +90,7 @@ def get_full_path(
         x, y = x + dx, y + dy
         if x < 0 or y < 0 or x >= width or y >= height:
             break
-        elif rows[y][x] == "#":
+        if rows[y][x] == "#":
             x -= dx
             y -= dy
             dindex = (dindex + 1) % len(directions)
@@ -141,7 +141,10 @@ def main() -> None:
 
     loop_positions = 0
     for block in path:
-        if block != (sx, sy) and path_loops_with_patch(
+        if block == (sx, sy):
+            continue
+        
+        if path_loops_with_patch(
             rows, directions, direction_map, jump_map, sx, sy, block
         ):
             loop_positions += 1
