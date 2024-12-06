@@ -33,10 +33,10 @@ def build_graph(rules):
         if x not in in_degree:
             in_degree[x] = 0
 
-    return graph, in_degree
+    return graph
 
 
-def is_ordered(update, graph, in_degree):
+def is_ordered(update, graph):
     order_map = {page: idx for idx, page in enumerate(update)}
     for x in update:
         for y in graph[x]:
@@ -45,7 +45,7 @@ def is_ordered(update, graph, in_degree):
     return True
 
 
-def topological_sort(update, graph, in_degree):
+def topological_sort(update, graph):
     subgraph = {node: [] for node in update}
     sub_in_degree = {node: 0 for node in update}
 
@@ -75,14 +75,14 @@ def find_middle(update):
 
 def main():
     rules, updates = parse_input()
-    graph, in_degree = build_graph(rules)
+    graph = build_graph(rules)
 
     corrected_middle_sum = 0
 
     for update in updates:
-        if not is_ordered(update, graph, in_degree):
+        if not is_ordered(update, graph):
             # Fix the update using topological sorting
-            sorted_update = topological_sort(update, graph, in_degree)
+            sorted_update = topological_sort(update, graph)
             corrected_middle_sum += find_middle(sorted_update)
 
     print(corrected_middle_sum)
