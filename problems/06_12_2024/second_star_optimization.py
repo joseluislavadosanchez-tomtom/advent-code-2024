@@ -14,22 +14,24 @@ def find_start(rows: list[str]) -> tuple[int, int]:
 def create_jump_map(
     rows: list[str], width: int, height: int, directions: list[tuple[int, int]]
 ) -> dict[tuple[int, int, int], tuple[int, int, int] | None]:
-    def get_jump_location(x: int, y: int, dindex: int) -> tuple[int, int, int] | None:
+    def get_jump_location(
+        x: int, y: int, direction_index: int
+    ) -> tuple[int, int, int] | None:
         if rows[y][x] == "#":
             return None
 
-        dx, dy = directions[dindex]
+        dx, dy = directions[direction_index]
         while 0 <= x < width and 0 <= y < height and rows[y][x] != "#":
             x += dx
             y += dy
 
         if x < 0 or y < 0 or x >= width or y >= height:
-            return (x, y, -1)  # Changed dindex from None to -1 to match expected type
+            return (x, y, -1)
 
         x -= dx
         y -= dy
-        dindex = (dindex + 1) % 4
-        return (x, y, dindex)
+        direction_index = (direction_index + 1) % 4
+        return (x, y, direction_index)
 
     return {
         (x, y, di): get_jump_location(x, y, di)
@@ -40,11 +42,13 @@ def create_jump_map(
 
 
 def jump_into_block(
-    directions: list[tuple[int, int]], dindex: int, block_patch: tuple[int, int]
+    directions: list[tuple[int, int]],
+    direction_index: int,
+    block_patch: tuple[int, int],
 ) -> tuple[int, int, int]:
-    dx, dy = directions[dindex]
+    dx, dy = directions[direction_index]
     bx, by = block_patch
-    return (bx - dx, by - dy, (dindex + 1) % 4)
+    return (bx - dx, by - dy, (direction_index + 1) % 4)
 
 
 def jump(
@@ -52,20 +56,20 @@ def jump(
     directions: list[tuple[int, int]],
     x: int,
     y: int,
-    dindex: int,
+    direction_index: int,
     block_patch: tuple[int, int] | None,
 ) -> tuple[int, int, int] | None:
-    dest = jump_map.get((x, y, dindex))
+    dest = jump_map.get((x, y, direction_index))
     if dest is None:
         return None
 
     if block_patch is not None:
-        fx, fy, fdindex = dest
+        fx, fy, fdirection_index = dest
         bx, by = block_patch
         if fx == bx and min(y, fy) <= by <= max(y, fy):
-            return jump_into_block(directions, dindex, block_patch)
+            return jump_into_block(directions, direction_index, block_patch)
         elif min(x, fx) <= bx <= max(x, fx) and fy == by:
-            return jump_into_block(directions, dindex, block_patch)
+            return jump_into_block(directions, direction_index, block_patch)
     return dest
 
 
@@ -81,19 +85,19 @@ def get_full_path(
     x, y = sx, sy
 
     visited = set()
-    dindex = directions.index(direction_map[rows[y][x]])
+    direction_index = directions.index(direction_map[rows[y][x]])
 
     while True:
         visited.add((x, y))
 
-        dx, dy = directions[dindex]
+        dx, dy = directions[direction_index]
         x, y = x + dx, y + dy
         if x < 0 or y < 0 or x >= width or y >= height:
             break
         if rows[y][x] == "#":
             x -= dx
             y -= dy
-            dindex = (dindex + 1) % len(directions)
+            direction_index = (direction_index + 1) % len(directions)
 
     return visited
 
@@ -108,21 +112,21 @@ def path_loops_with_patch(
     block_patch: tuple[int, int],
 ) -> bool:
     x, y = sx, sy
-    dindex = directions.index(direction_map[rows[y][x]])
+    direction_index = directions.index(direction_map[rows[y][x]])
 
     visited = set()
 
     while True:
-        result = jump(jump_map, directions, x, y, dindex, block_patch)
+        result = jump(jump_map, directions, x, y, direction_index, block_patch)
         if result is None:
             return False
 
-        x, y, dindex = result
+        x, y, direction_index = result
 
-        if (x, y, dindex) in visited:
+        if (x, y, direction_index) in visited:
             return True
 
-        visited.add((x, y, dindex))
+        visited.add((x, y, direction_index))
 
 
 def main() -> None:
@@ -143,7 +147,7 @@ def main() -> None:
     for block in path:
         if block == (sx, sy):
             continue
-        
+
         if path_loops_with_patch(
             rows, directions, direction_map, jump_map, sx, sy, block
         ):
