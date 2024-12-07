@@ -1,3 +1,4 @@
+import math
 import sys
 from itertools import product
 
@@ -33,9 +34,9 @@ def result() -> int:
                     current_sum *= values[i + 1]
                 elif op == 2:  # Concatenation
                     current_sum = (
-                        current_sum * (10 ** len(str(values[i + 1]))) + values[i + 1]
+                        current_sum * (10 ** (1 + int(math.log10(values[i + 1]))))
+                        + values[i + 1]
                     )
-
                 # Early exit if current_sum exceeds target
                 if current_sum > target:
                     valid = False
