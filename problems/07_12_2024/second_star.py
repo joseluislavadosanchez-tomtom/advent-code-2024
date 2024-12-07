@@ -13,8 +13,7 @@ def read_line():
 
 def generate_all_combinations(length: int):
     # Use a generator instead of creating a full list
-    for comb in product([0, 1, 2], repeat=length):
-        yield map(str, comb)
+    return product([0, 1, 2], repeat=length)
 
 
 def result() -> int:
@@ -28,11 +27,11 @@ def result() -> int:
             valid = True  # Flag to track if the calculation is valid
 
             for i, op in enumerate(combination):
-                if op == "0":  # Addition
+                if op == 0:  # Addition
                     current_sum += values[i + 1]
-                elif op == "1":  # Multiplication
+                elif op == 1:  # Multiplication
                     current_sum *= values[i + 1]
-                elif op == "2":  # Concatenation
+                elif op == 2:  # Concatenation
                     current_sum = (
                         current_sum * (10 ** len(str(values[i + 1]))) + values[i + 1]
                     )
