@@ -1,8 +1,6 @@
 import sys
 from itertools import product
 
-from tqdm.auto import tqdm
-
 
 def read_line():
     # Return a line from the input using a generator
@@ -22,7 +20,7 @@ def generate_all_combinations(length: int):
 def result() -> int:
     final_sum = 0
 
-    for target, values in tqdm(read_line(), total=850):
+    for target, values in read_line():
         combinations = generate_all_combinations(len(values) - 1)
 
         for combination in combinations:
