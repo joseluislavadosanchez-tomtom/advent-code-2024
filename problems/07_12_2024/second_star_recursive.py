@@ -33,8 +33,6 @@ def evaluate_equation(
     # Concatenation
     concatenated_value = (
         current_value * (10 ** (1 + int(math.log10(numbers[index])))) + numbers[index]
-        if numbers[index] > 0
-        else current_value * 10 + numbers[index]
     )
     if concatenated_value <= target and evaluate_equation(
         target, numbers, index + 1, concatenated_value
