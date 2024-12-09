@@ -1,56 +1,62 @@
 import sys
 
 
-def read_input() -> tuple[int, list[int]]:
-    line = sys.stdin.readline().strip()
-
-    input = list(map(int, line))
-
-    disk = [-1] * sum(input)
-    disk_index = 0
+def read_disk() -> list[str]:
+    disk_map = sys.stdin.read().strip()
+    blocks = []
     data_id = 0
+    is_data = True
 
-    for index, digit in enumerate(input):
-        data = index % 2 == 0
-        if data:
-            for i in range(digit):
-                disk[disk_index] = data_id
-                disk_index += 1
+    for c in disk_map:
+        digit = int(c)
+        if is_data:
+            blocks.extend([str(data_id)] * digit)
             data_id += 1
         else:
-            disk_index += digit
+            blocks.extend(["."] * digit)
+        is_data = not is_data
 
-    return disk_index, disk
-
-
-def process_disk(disk_size: int, disk: list[int]) -> list[int]:
-    final_disk = disk.copy()
-
-    empty_index = final_disk.index(-1)
-    data_index = disk_size - 1
-    while empty_index != data_index:
-        if final_disk[data_index] == -1:
-            data_index -= 1
-        final_disk[empty_index] = final_disk[data_index]
-        final_disk[data_index] = -1
-        empty_index = final_disk.index(-1)
-
-    return final_disk
+    return blocks
 
 
-def compute_checksum(disk: list[int]) -> int:
+def process_disk(disk: list[str]) -> list[str]:
+    empty_blocks = []
+    data_blocks = []
+
+    for index, c in enumerate(disk):
+        if c == ".":
+            empty_blocks.append(index)
+        else:
+            data_blocks.append(index)
+
+    data_sorted = sorted(data_blocks)
+    empty_sorted = sorted(empty_blocks)
+
+    pointer = len(data_sorted) - 1
+
+    for empty in empty_sorted:
+        while pointer >= 0 and data_sorted[pointer] <= empty:
+            pointer -= 1
+        if pointer >= 0:
+            disk[empty] = disk[data_sorted[pointer]]
+            disk[data_sorted[pointer]] = "."
+            pointer -= 1
+
+    return disk
+
+
+def compute_checksum(disk: list[str]) -> int:
     checksum = 0
-    for index, digit in enumerate(disk):
-        if digit == -1:
-            break
-        checksum += digit * index
-
+    for i, block in enumerate(disk):
+        if block != ".":
+            checksum += i * int(block)
     return checksum
 
 
-def result() -> int:
-    length, values = read_input()
-    return compute_checksum(process_disk(length, values))
+def result():
+    disk = read_disk()
+    blocks = process_disk(disk)
+    return compute_checksum(blocks)
 
 
 if __name__ == "__main__":
