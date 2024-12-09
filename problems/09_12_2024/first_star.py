@@ -1,7 +1,7 @@
 import sys
 
 
-def read_disk() -> list[str]:
+def read_disk() -> list[int]:
     disk_map = sys.stdin.read().strip()
     blocks = []
     data_id = 0
@@ -10,21 +10,21 @@ def read_disk() -> list[str]:
     for c in disk_map:
         digit = int(c)
         if is_data:
-            blocks.extend([str(data_id)] * digit)
+            blocks.extend([data_id] * digit)
             data_id += 1
         else:
-            blocks.extend(["."] * digit)
+            blocks.extend([-1] * digit)
         is_data = not is_data
 
     return blocks
 
 
-def process_disk(disk: list[str]) -> list[str]:
+def process_disk(disk: list[int]) -> list[int]:
     empty_blocks = []
     data_blocks = []
 
     for index, c in enumerate(disk):
-        if c == ".":
+        if c == -1:
             empty_blocks.append(index)
         else:
             data_blocks.append(index)
@@ -36,16 +36,16 @@ def process_disk(disk: list[str]) -> list[str]:
             pointer -= 1
         if pointer >= 0:
             disk[empty] = disk[data_blocks[pointer]]
-            disk[data_blocks[pointer]] = "."
+            disk[data_blocks[pointer]] = -1
             pointer -= 1
 
     return disk
 
 
-def compute_checksum(disk: list[str]) -> int:
+def compute_checksum(disk: list[int]) -> int:
     checksum = 0
     for i, block in enumerate(disk):
-        if block != ".":
+        if block != -1:
             checksum += i * int(block)
     return checksum
 
