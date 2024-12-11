@@ -44,7 +44,6 @@ def result():
     # Read the stones from stdin (one line, space-separated)
     line = sys.stdin.readline().strip()
     initial_stones = line.split()
-    # You can set total_steps to 75 as required by the puzzle
     total_steps = 75
 
     result = solve(initial_stones, total_steps)
